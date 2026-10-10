@@ -27,3 +27,7 @@ Each skill's frontmatter carries:
   reviewed against. A bump means it was checked, not necessarily changed.
 
 Releases are tagged `<skill>-v<skill-version>`.
+
+## Licence
+
+MIT, copyright Riv Games, Inc. See [LICENSE](LICENSE).
