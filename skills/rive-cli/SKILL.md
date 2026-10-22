@@ -3,9 +3,9 @@ name: rive-cli
 description: "Field lessons for projects built with the official Rive CLI (`rive`, rive.yaml + scene.rml + .luau): which loop proves what (native unsigned vs signed web), headless-capture blind spots, push/sign/watermark traps, test gates, CLI upgrades, troubleshooting and performance measurement. Use when building, testing, signing, pushing, upgrading or optimising a Rive CLI project."
 compatibility: "Official Rive CLI on PATH (`rive --version`); its bundled docs via `rive docs`"
 metadata:
-  skill-version: "1.0.0"
-  rive-cli-checked: "1.5.1"
-  checked-on: "2026-10-09"
+  skill-version: "1.1.0"
+  rive-cli-checked: "1.7.0"
+  checked-on: "2026-10-22"
 ---
 
 # Rive CLI
