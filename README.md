@@ -5,14 +5,14 @@ building with Rive.
 
 | Skill | For | Checked against |
 |---|---|---|
-| [`rive-cli`](skills/rive-cli/SKILL.md) | Projects built with the official Rive CLI (`rive`): which loop proves what, headless-capture blind spots, push/sign/watermark traps, test gates, CLI upgrades, troubleshooting, performance measurement | Rive CLI 1.5.1 |
+| [`rive-cli`](skills/rive-cli/SKILL.md) | Projects built with the official Rive CLI (`rive`): which loop proves what, headless-capture blind spots, push/sign/watermark traps, test gates, CLI upgrades, troubleshooting, performance measurement | Rive CLI 1.7.0 |
 
 ## Install
 
 Into the current project, pinned to a release tag:
 
 ```sh
-npx skills add rivgames/skills#rive-cli-v1.0.0 --skill rive-cli
+npx skills add rivgames/skills#rive-cli-v1.1.0 --skill rive-cli
 ```
 
 Update a project later with `npx skills update rive-cli`, or re-run `add`
