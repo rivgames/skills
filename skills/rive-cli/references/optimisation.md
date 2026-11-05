@@ -54,9 +54,11 @@ web runtime source.
   515 ms under tablet emulation. A spread bake comes out blank in headless
   captures; see the troubleshooting table.
 - **Time setup in an `--optimize` copy, not the live window.** The live
-  window's debug builds run slower than what ships: AnimaScript's run tight
-  loops several times slower (Rive's build-settings docs), and Luau compiles
-  at O1, not O2. In a throwaway copy run with `--optimize`, wrap `init` or a
+  window builds scripts for debugging. AnimaScript debug builds meter every
+  loop, so tight loops run several times slower than a published file
+  (Rive's build-settings docs). Luau there compiles at O1, and `--optimize`
+  compiles it at O2 (CLI commands reference); no doc names the level of a
+  signed file. In a throwaway copy run with `--optimize`, wrap `init` or a
   Luau module body in `os.clock()` calls (`os.clock` is Luau's). Timing
   prints change the signed bytes, so keep them out of the build you sign.
 - **Prove the budget under CPU throttling.** Load the signed file in a
