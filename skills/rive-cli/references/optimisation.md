@@ -39,10 +39,9 @@ web runtime source.
   (`rive docs gpu-performance`). Keep each call well under it, AnimaScript
   too while the browser leaves your build unbounded, so a later fuel build
   does not cut it off on slow phones. A heavy `init` in a fuel-built
-  AnimaScript module was stopped at 200 ms in 6 of 9 headless web loads:
-  every phone- and tablet-size load on web runtime 2.49.1, and the
-  desktop-size load on 2.45.0. A phone page stayed blank. Count `init`'s
-  cost each time it runs.
+  AnimaScript module was stopped at 200 ms in 6 of 9 headless web loads,
+  on web runtimes 2.45.0 and 2.49.1 and at phone, tablet and desktop sizes.
+  A phone page stayed blank. Count `init`'s cost each time it runs.
 - **1 s for a Luau module's top level, from web runtime 2.48.0.** Code
   outside functions is stopped with `execution exceeded 1.0 second timeout`,
   and every script that requires that module then fails with `require could
