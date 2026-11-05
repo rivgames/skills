@@ -34,11 +34,15 @@ Seen in Rive's showcase games (rive.app/games), November 2026, and in the
 web runtime source.
 
 - **200 ms per call, `init` included.** Rive's scripting security docs give
-  every Luau and AnimaScript call that budget, and native runtimes enforce it
-  (`rive docs gpu-performance`). Keep each call well under it: a heavy
-  `init` in a fuel-built AnimaScript module was stopped at 200 ms in 6 of 9
-  headless web loads, all under phone or tablet emulation, and the page
-  stayed blank. Desktop loads passed. Count `init`'s cost each time it runs.
+  each Luau and AnimaScript call that budget (AnimaScript background jobs
+  and workers excepted), and native runtimes enforce it
+  (`rive docs gpu-performance`). Keep each call well under it, AnimaScript
+  too while the browser leaves your build unbounded, so a later fuel build
+  does not cut it off on slow phones. A heavy `init` in a fuel-built
+  AnimaScript module was stopped at 200 ms in 6 of 9 headless web loads:
+  every phone- and tablet-size load on web runtime 2.49.1, and the
+  desktop-size load on 2.45.0. A phone page stayed blank. Count `init`'s
+  cost each time it runs.
 - **1 s for a Luau module's top level, from web runtime 2.48.0.** Code
   outside functions is stopped with `execution exceeded 1.0 second timeout`,
   and every script that requires that module then fails with `require could
@@ -46,13 +50,16 @@ web runtime source.
   limit, so a file that passes there can fail after a runtime upgrade.
 - **Precompute, then slice.** Build heavy data in the generator or prepare
   step. Spread what remains over the first advances with a fixed per-frame
-  time slice checked with `os.clock()`. A slice tuned on a desktop can still
-  overrun: one bake stage that usually took 22 ms took 515 ms under tablet
-  emulation. A spread bake comes out blank in headless captures; see the
-  troubleshooting table.
-- **Time setup in dev builds only.** `os.clock()` around a module body or
-  `init` gives its cost. Timing prints change the signed bytes, so keep them
-  out of the release build.
+  time slice (in Luau, checked with `os.clock()`). A slice tuned on a
+  desktop can still overrun: one bake stage that usually took 22 ms took
+  515 ms under tablet emulation. A spread bake comes out blank in headless
+  captures; see the troubleshooting table.
+- **Time setup in an `--optimize` copy, not the live window.** The live
+  window's debug builds run slower than what ships: AnimaScript's run tight
+  loops several times slower (Rive's build-settings docs), and Luau compiles
+  at O1, not O2. In a throwaway copy run with `--optimize`, wrap `init` or a
+  Luau module body in `os.clock()` calls (`os.clock` is Luau's). Timing
+  prints change the signed bytes, so keep them out of the build you sign.
 - **Prove the budget under CPU throttling.** Load the signed file in a
   browser at 6x and 20x (CDP `Emulation.setCPUThrottlingRate`), on the
   runtime you ship and on the next one you plan to move to. Fail on console
@@ -83,9 +90,6 @@ show the build:
 - Rive's current build-settings docs add `wasmFuel: true` (off by default;
   a few percent slower in loops). Check `rive docs` for your CLI before
   relying on it.
-- Keep AnimaScript calls inside the 200 ms budget even while your build is
-  unbounded in the browser, so a later fuel build does not cut them off on
-  slow phones.
 - A host that plays AnimaScript files from outside its team should accept
   only fuel builds, checked from the exports. Rive's scripting security page
   gives the same advice.
