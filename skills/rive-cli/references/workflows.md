@@ -76,7 +76,7 @@ parsing.
   read sticks and triggers there. Move through menus by focus traversal:
   focus routes keyboard and gamepad input alike. In two of Rive's showcase
   games (November 2026) the runtime read the pad and the file ignored it.
-- The page needs no pad code. From web runtime 2.48.0 the runtime reads pads
+- From web runtime 2.48.0 the page needs no pad code: the runtime reads pads
   itself, on by default for every instance. Web runtimes 2.38.0 to 2.47.x
   have the core gamepad support, so files with Gamepad listeners load, but
   they never read pads (checked on 2.45.0 and 2.47.1). Until you upgrade,

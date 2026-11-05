@@ -50,8 +50,8 @@ web runtime source.
 - **Precompute, then slice.** Build heavy data in the generator or prepare
   step, and spread what remains over the first advances. In Luau, give each
   advance a fixed time slice, checked with `os.clock()`. AnimaScript's docs
-  name no clock (its time comes from advance deltas), so there give each
-  advance a fixed amount of work. A slice tuned on a desktop can still
+  name no clock function a script can call (its frame time comes from
+  advance deltas), so there give each advance a fixed amount of work. A slice tuned on a desktop can still
   overrun: one bake stage that usually took 22 ms took 515 ms under tablet
   emulation. A spread bake comes out blank in headless captures; see the
   troubleshooting table.
@@ -61,8 +61,10 @@ web runtime source.
   (Rive's build-settings docs). Luau there compiles at O1, and `--optimize`
   compiles it at O2 (CLI commands reference); no doc names the level of a
   signed file. In a throwaway copy run with `--optimize`, wrap `init` or a
-  Luau module body in `os.clock()` calls (`os.clock` is Luau's). Timing
-  prints change the signed bytes, so keep them out of the build you sign.
+  Luau module body in `os.clock()` calls (`os.clock` is Luau's). AnimaScript
+  has no documented timing call, so bound its setup by work per advance, as
+  above. Timing prints change the signed bytes, so keep them out of the
+  build you sign.
 - **Prove the budget under CPU throttling.** Load the signed file in a
   browser at 6x and 20x (CDP `Emulation.setCPUThrottlingRate`), on the
   runtime you ship and on the next one you plan to move to. Fail on console
@@ -73,7 +75,9 @@ web runtime source.
 - **Prove Luau's 200 ms natively or by timing.** Rive's docs say runtimes
   interrupt a Luau call over 200 ms, but no such stop was seen on web runtime
   2.45.0, even with 7-26 s main-thread stalls at 60x throttling. A clean
-  browser run does not prove the budget.
+  browser run does not prove the budget, and neither does one with a
+  watchdog or `dangerouslyFast` AnimaScript build, which the browser also
+  leaves unbounded.
 
 ### AnimaScript in the browser
 
@@ -114,9 +118,10 @@ Seen in Rive's showcase games, November 2026 (0.4 to 72 MB each).
   player-entered text included.
 - **Choose each sound's format by its size after the compression your server
   applies** (brotli or gzip). MP3 suits music and long sounds. Short
-  synthesized WAV effects can shrink to almost nothing, where MP3 would be
-  larger: in one project, 267 KB of short WAV effects became 1.3 KB with
-  brotli.
+  synthesized WAV effects can compress well, sometimes below MP3, but measure
+  each set: in one project 267 KB of synthesized effects became 1.3 KB with
+  brotli, while another set of short 22-24 kHz mono effects only went from
+  1.19 MB to 0.78 MB.
 - **Resample high-rate audio before import.** One showcase game spent 29 MB
   on 107 s of sound, mostly 96 or 192 kHz 24-bit stereo FLAC.
 - **Ship images at the size they are displayed, as WebP or JPEG.** One
@@ -126,9 +131,10 @@ Seen in Rive's showcase games, November 2026 (0.4 to 72 MB each).
 - **Check the served `Content-Encoding` and transfer size.** Some CDNs skip
   large files: CloudFront compresses only objects of 1,000 to 10,000,000
   bytes, so the biggest showcase files arrived uncompressed. If the header
-  is missing, change how the file is served (a content type the CDN
-  compresses, or a host that compresses files that size), then check that
-  the transfer size has dropped below the raw size.
+  is missing, change how the file is served: for a size cap, a host or CDN
+  path that compresses files that size, or a pre-compressed object; for a
+  CDN that skips by type, a content type it compresses. Then check that the
+  transfer size has dropped below the raw size.
 - **Leave `shaderOutputs` at its default of all five targets.** A runtime
   reads only its own backend's target, and a target left out does not load
   on that backend. The cost lands on the web: WebGL2 reads only GLSL ES 300,
