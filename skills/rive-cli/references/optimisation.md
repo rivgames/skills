@@ -90,3 +90,36 @@ show the build:
   only fuel builds, checked from the exports. Rive's scripting security page
   gives the same advice.
 
+## File size
+
+Seen in Rive's showcase games, November 2026 (0.4 to 72 MB each).
+
+- **Measure bytes per asset type, raw and compressed, before signing.**
+  Re-encoding later means signing again. Large files are not always media:
+  several showcase files were mostly meshes, raw textures or data blobs.
+- **Subset fonts in the prepare step** (for example with fontTools). The CLI
+  embeds font bytes as given (CLI 1.7.0 docs). Its sample `Inter.ttf` is
+  877 KB with 2,933 glyphs, and four showcase games shipped it whole; a
+  printable-ASCII cut is 84 KB. Keep every character the file can show,
+  player-entered text included.
+- **Choose each sound's format by its size after the compression your server
+  applies** (brotli or gzip). MP3 suits music and long sounds. Short
+  synthesized WAV effects can shrink to almost nothing (267 KB of WAV became
+  1.3 KB with brotli), where MP3 would be larger.
+- **Resample high-rate audio before import.** One showcase game spent 29 MB
+  on 107 s of sound, mostly 96 or 192 kHz 24-bit stereo FLAC.
+- **Ship images at the size they are displayed, as WebP or JPEG.** One
+  showcase game carried 36.7 MB of PNG, 33 of its 35 images over 1024 px. The
+  CLI strips ImageAsset format and quality on export (CLI 1.7.0 docs), so
+  resize and encode in the prepare step.
+- **Check the served `Content-Encoding`.** Some CDNs skip large files:
+  CloudFront compresses only objects of 1,000 to 10,000,000 bytes, so the
+  biggest showcase files arrived uncompressed.
+- **Leave `shaderOutputs` at its default of all five targets.** A runtime
+  reads only its own backend's target, and a target left out does not load
+  on that backend. The cost lands on the web: WebGL2 reads only GLSL ES 300,
+  so 56-85% of the raw shader bytes in the showcase files are never read
+  there. Compression shrinks the total (1.67 MB of shaders became 0.32 MB
+  with gzip), but the unread share stays about 80%. Trim only for a file
+  that will only ever run on one backend, after measuring that share of the
+  compressed download. The value is fixed when you sign.
