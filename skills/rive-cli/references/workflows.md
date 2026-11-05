@@ -28,6 +28,17 @@ topic first.
 - In `@rive-app/webgl2`, view-model `.on()` callbacks also fire for the host's
   own writes. Track host echoes explicitly instead of comparing against staged
   values.
+- Send signals to the host through view-model properties (a counter or a
+  trigger), not Rive Events. Rive's web docs mark Events deprecated, web
+  runtime 2.45.0 warns when a page subscribes to `riveevent`, and React
+  Native 0.5.0 removed the event methods. The CLI has no event output, but
+  `--data-dump` reads a counter. None of Rive's showcase games (November
+  2026) uses an Event.
+- When the host must act inside the player's gesture (share sheet,
+  clipboard, fullscreen), write that property from the Luau input handler
+  itself (`pointerUp`, `keyboardEvent`). If an RML listener writes a command
+  that Luau reads on its next advance, the host sees the result a frame
+  later, outside the gesture (measured on web runtime 2.45.0).
 - Native `--viewport` is in points: for a device-pixel-ratio 2 target of
   1440x1212, capture at 720x606.
 - For pixel comparisons, freeze time- and pointer-driven motion with a data
@@ -46,12 +57,32 @@ A check that holds up, in order:
    takes `--json`, not `--format=json`.
 3. `--test --format=json`: require `noTestsFound: false`, zero failures and
    the named cases you expect.
-4. Scenario runs with `--pointer`/`--key`/`--touch` plus `--data-dump`, and
-   assert on dumped values rather than on screenshots.
+4. Scenario runs with `--pointer`/`--key`/`--touch`/`--gamepad` plus
+   `--data-dump`, and assert on dumped values rather than on screenshots.
 5. `--once` twice and compare sha256 to prove the export is byte-identical.
 
 JSON goes to stdout and logs to stderr, so keep the two streams separate when
 parsing.
+
+## Gamepad input
+
+- Give every key-driven action a pad path inside the file. On listeners, add
+  a Gamepad input beside each key, on the same listener or on a sibling
+  listener that targets the same focus node. In scripts, add `gamepadEvent`
+  beside `keyboardEvent`, plus `gamepadDisconnected` to clear held input, and
+  read sticks and triggers there. Move through menus by focus traversal:
+  focus routes keyboard and gamepad input alike. In two of Rive's showcase
+  games (November 2026) the runtime read the pad and the file ignored it.
+- The page needs no pad code. From web runtime 2.48.0 the runtime reads pads
+  itself, on by default for every instance. Earlier runtimes load Gamepad
+  listeners but never feed them, so until you upgrade, the paired keys are
+  what players use.
+- A page that already turns pads into synthetic key events should pass
+  `shouldDisableGamepad: true` for the files it maps; otherwise both paths
+  reach the file. `gamepadOptions.requireFocus` holds pad input at rest
+  until the canvas has focus, for pages with several pad-driven graphics.
+- Test pads on each native target before claiming support. GitHub code
+  search found no gamepad code in rive-ios or rive-android (November 2026).
 
 ## Editor round-trip and libraries
 
