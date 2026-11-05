@@ -60,10 +60,9 @@ A check that holds up, in order:
 4. Scenario runs with `--pointer`/`--key`/`--touch`/`--gamepad` plus
    `--data-dump`, and assert on dumped values rather than on screenshots.
 5. `--once` twice and compare sha256 to prove the export is byte-identical.
-6. Once signed, in a browser: tap every menu control with touch events, and
-   load under CPU throttling on the runtime you ship and the next one. See
-   the touch row in [troubleshooting.md](troubleshooting.md) and "Script
-   time budgets" in [optimisation.md](optimisation.md).
+6. Once signed, run the browser checks in the touch row of
+   [troubleshooting.md](troubleshooting.md) and in "Script time budgets" in
+   [optimisation.md](optimisation.md).
 
 JSON goes to stdout and logs to stderr, so keep the two streams separate when
 parsing.
@@ -84,8 +83,10 @@ parsing.
   the paired keys are what players use.
 - A page that already turns pads into synthetic key events should pass
   `shouldDisableGamepad: true` for the files it maps; otherwise both paths
-  reach the file. `gamepadOptions.requireFocus` holds pad input at rest
-  until the canvas has focus, for pages with several pad-driven graphics.
+  would reach the file (from the runtime source; not observed).
+  `shouldDisableRiveListeners: true` switches pads off too, with every other
+  Rive listener. `gamepadOptions.requireFocus` holds pad input at rest until
+  the canvas has focus, for pages with several pad-driven graphics.
 - Test pads on each native target before claiming support. GitHub code
   search found no gamepad code in rive-ios or rive-android (November 2026).
 
