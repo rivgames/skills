@@ -48,11 +48,13 @@ web runtime source.
   not find a script named …`. Web runtimes 2.45.0 and 2.47.1 set no such
   limit, so a file that passes there can fail after a runtime upgrade.
 - **Precompute, then slice.** Build heavy data in the generator or prepare
-  step. Spread what remains over the first advances with a fixed per-frame
-  time slice (in Luau, checked with `os.clock()`). A slice tuned on a
-  desktop can still overrun: one bake stage that usually took 22 ms took
-  515 ms under tablet emulation. A spread bake comes out blank in headless
-  captures; see the troubleshooting table.
+  step, and spread what remains over the first advances. In Luau, give each
+  advance a fixed time slice, checked with `os.clock()`. AnimaScript's docs
+  name no clock (its time comes from advance deltas), so there give each
+  advance a fixed amount of work. A slice tuned on a desktop can still
+  overrun: one bake stage that usually took 22 ms took 515 ms under tablet
+  emulation. A spread bake comes out blank in headless captures; see the
+  troubleshooting table.
 - **Time setup in an `--optimize` copy, not the live window.** The live
   window builds scripts for debugging. AnimaScript debug builds meter every
   loop, so tight loops run several times slower than a published file
@@ -65,8 +67,9 @@ web runtime source.
   browser at 6x and 20x (CDP `Emulation.setCPUThrottlingRate`), on the
   runtime you ship and on the next one you plan to move to. Fail on console
   lines containing `execution exceeded` or `require could not find`, or when
-  the script's first-draw flag never sets. 6x was enough to reproduce the 1 s
-  module stop on 2.49.3.
+  the first-draw flag never sets (the view-model boolean in "A scripted scene
+  inside a web host", [workflows.md](workflows.md)). 6x was enough to
+  reproduce the 1 s module stop on 2.49.3.
 - **Prove Luau's 200 ms natively or by timing.** Rive's docs say runtimes
   interrupt a Luau call over 200 ms, but no such stop was seen on web runtime
   2.45.0, even with 7-26 s main-thread stalls at 60x throttling. A clean
@@ -75,8 +78,9 @@ web runtime source.
 ### AnimaScript in the browser
 
 How the browser bounds an AnimaScript (`scripting: wasm`) call depends on how
-the module was built. The `.riv` embeds the wasm module, and its export names
-show the build:
+the module was built. The `.riv` embeds each wasm module, and its export names
+show the build. To read them, find each `\0asm` header in the `.riv` and walk
+that module's sections to its export section (id 7):
 
 | Exports | Build | In the browser |
 |---|---|---|
@@ -92,16 +96,17 @@ show the build:
   a few percent slower in loops). Check `rive docs` for your CLI before
   relying on it.
 - A host that plays AnimaScript files from outside its team should accept
-  only fuel builds, checked from the exports. Rive's scripting security page
-  gives the same advice.
+  only files whose every wasm module is a fuel build, read from the exports
+  as above. Rive's scripting security page gives the same advice.
 
 ## File size
 
 Seen in Rive's showcase games, November 2026 (0.4 to 72 MB each).
 
-- **Measure bytes per asset type, raw and compressed, before signing.**
-  Re-encoding later means signing again. Large files are not always media:
-  several showcase files were mostly meshes, raw textures or data blobs.
+- **Total the source assets' bytes by type in the prepare step, raw and
+  compressed, before signing.** Re-encoding later means signing again.
+  Large files are not always media: several showcase files were mostly
+  meshes, raw textures or data blobs.
 - **Subset fonts in the prepare step** (for example with fontTools). The CLI
   embeds font bytes as given (CLI 1.7.0 docs). Its sample `Inter.ttf` is
   877 KB with 2,933 glyphs, and four showcase games shipped it whole; a
@@ -130,5 +135,4 @@ Seen in Rive's showcase games, November 2026 (0.4 to 72 MB each).
   so 56-85% of the raw shader bytes in the showcase files are never read
   there. Compression shrinks the total (1.67 MB of shaders became 0.32 MB
   with gzip), but the unread share stays about 80%. Trim only for a file
-  that will only ever run on one backend, after measuring that share of the
-  compressed download. The value is fixed when you sign.
+  that will only ever run on one backend. The value is fixed when you sign.
