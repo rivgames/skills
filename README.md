@@ -5,7 +5,7 @@ building with Rive.
 
 | Skill | For | Checked against |
 |---|---|---|
-| [`rive-cli`](skills/rive-cli/SKILL.md) | Projects built with the official Rive CLI (`rive`): which loop proves what, headless-capture blind spots, push/sign/watermark traps, test gates, CLI upgrades, troubleshooting, performance measurement | Rive CLI 1.5.1 |
+| [`rive-cli`](skills/rive-cli/SKILL.md) | Projects built with the official Rive CLI (`rive`): which loop proves what, headless-capture blind spots, push/sign/watermark traps, test gates, CLI upgrades, troubleshooting, performance measurement, script time budgets, file size, gamepad input | Rive CLI 1.5.1 |
 
 ## Install
 

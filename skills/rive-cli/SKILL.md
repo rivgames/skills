@@ -1,9 +1,9 @@
 ---
 name: rive-cli
-description: "Field lessons for projects built with the official Rive CLI (`rive`, rive.yaml + scene.rml + .luau): which loop proves what (native unsigned vs signed web), headless-capture blind spots, push/sign/watermark traps, test gates, CLI upgrades, troubleshooting and performance measurement. Use when building, testing, signing, pushing, upgrading or optimising a Rive CLI project."
+description: "Field lessons for projects built with the official Rive CLI (`rive`, rive.yaml + scene.rml + .luau): which loop proves what (native unsigned vs signed web), headless-capture blind spots, push/sign/watermark traps, test gates, CLI upgrades, troubleshooting, performance measurement, script time budgets, file size and gamepad input. Use when building, testing, signing, pushing, upgrading or optimising a Rive CLI project."
 compatibility: "Official Rive CLI on PATH (`rive --version`); its bundled docs via `rive docs`"
 metadata:
-  skill-version: "1.0.0"
+  skill-version: "1.1.0"
   rive-cli-checked: "1.5.1"
   checked-on: "2026-10-09"
 ---
@@ -58,9 +58,9 @@ lessons that cost rework in real projects.
 
 | Task | Read |
 |---|---|
-| Starting a project or animation; scripted scenes for a web host; games with tests and headless proof; editor round-trip and libraries; CI or agent shells; updating the CLI | [references/workflows.md](references/workflows.md) |
-| Something renders blank, a key does nothing, a require fails, push refuses, the web build is silent, numbers disagree | [references/troubleshooting.md](references/troubleshooting.md) |
-| Measuring or improving frame time and scripted GPU work | [references/optimisation.md](references/optimisation.md) |
+| Starting a project or animation; scripted scenes for a web host, including signals to the host; games with tests and headless proof; gamepad input; editor round-trip and libraries; CI or agent shells; updating the CLI | [references/workflows.md](references/workflows.md) |
+| Something renders blank, a key, tap or pad does nothing, a 3D layer is missing, a require fails, push refuses, the web build is silent, threads stay off, numbers disagree | [references/troubleshooting.md](references/troubleshooting.md) |
+| Measuring or improving frame time and scripted GPU work; script time budgets (`init`, module top level, AnimaScript in the browser); file size (fonts, audio, images, `shaderOutputs`) | [references/optimisation.md](references/optimisation.md) |
 
 ## Maintaining this skill
 
