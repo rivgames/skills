@@ -60,6 +60,10 @@ A check that holds up, in order:
 4. Scenario runs with `--pointer`/`--key`/`--touch`/`--gamepad` plus
    `--data-dump`, and assert on dumped values rather than on screenshots.
 5. `--once` twice and compare sha256 to prove the export is byte-identical.
+6. Once signed, in a browser: tap every menu control with touch events, and
+   load under CPU throttling on the runtime you ship and the next one. See
+   the touch row in [troubleshooting.md](troubleshooting.md) and "Script
+   time budgets" in [optimisation.md](optimisation.md).
 
 JSON goes to stdout and logs to stderr, so keep the two streams separate when
 parsing.
@@ -74,9 +78,10 @@ parsing.
   focus routes keyboard and gamepad input alike. In two of Rive's showcase
   games (November 2026) the runtime read the pad and the file ignored it.
 - The page needs no pad code. From web runtime 2.48.0 the runtime reads pads
-  itself, on by default for every instance. Earlier runtimes load Gamepad
-  listeners but never feed them, so until you upgrade, the paired keys are
-  what players use.
+  itself, on by default for every instance. Web runtimes 2.38.0 to 2.47.x
+  have the core gamepad support, so files with Gamepad listeners load, but
+  they never read pads (checked on 2.45.0 and 2.47.1). Until you upgrade,
+  the paired keys are what players use.
 - A page that already turns pads into synthetic key events should pass
   `shouldDisableGamepad: true` for the files it maps; otherwise both paths
   reach the file. `gamepadOptions.requireFocus` holds pad input at rest
