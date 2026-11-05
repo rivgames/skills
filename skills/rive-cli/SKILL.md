@@ -59,7 +59,7 @@ lessons that cost rework in real projects.
 | Task | Read |
 |---|---|
 | Starting a project or animation; scripted scenes for a web host, including signals to the host; games with tests and headless proof; gamepad input; editor round-trip and libraries; CI or agent shells; updating the CLI | [references/workflows.md](references/workflows.md) |
-| Something renders blank, a key, tap or pad does nothing, a 3D layer is missing, a require fails, push refuses, the web build is silent, threads stay off, numbers disagree | [references/troubleshooting.md](references/troubleshooting.md) |
+| Something renders blank, a key, tap or pad does nothing, a 3D layer is missing, a require fails, a script times out, push refuses, the web build is silent, threads stay off, numbers disagree | [references/troubleshooting.md](references/troubleshooting.md) |
 | Measuring or improving frame time and scripted GPU work; script time budgets (`init`, module top level, AnimaScript in the browser); file size (fonts, audio, images, `shaderOutputs`) | [references/optimisation.md](references/optimisation.md) |
 
 ## Maintaining this skill
